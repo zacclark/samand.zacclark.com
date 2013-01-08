@@ -1,0 +1,113 @@
+<html>
+	<head>
+		<title>Sam + Zac :: Save the Date</title>
+		<style type="text/css">
+			.event { width: 100%; }
+			.event .timetrack { position: relative; height: 30px; width: 100%; overflow: hidden; }
+			.event .timetrack .label { z-index: 20; position: absolute; font-size: 32px; line-height: 30px; font-family: sans-serif; }
+			.event .timetrack .fill { position: absolute; top: 0; left: 0; bottom: 0; width: 500px; background: #4c4; }
+		</style>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+		<script type="html/template" id="event_template">
+			<div class="event">
+				<h2>{{title}}</h2>
+				<div class="timetrack">
+					<div class="label">{{timestamp}}</div>
+					<div class="fill"></div>
+				</div>
+			</div>
+		</script>
+		<script type="text/javascript">
+			var app = {
+				events: []
+			};
+
+			var Event = function(title, timestamp) {
+				this.title = title;
+				this.timestamp = new Date(timestamp);
+			}
+
+			var timeDifference = function(laterdate, earlierdate) {
+    			var difference = laterdate.getTime() - earlierdate.getTime();
+    			if (difference < 0) {
+    				difference = earlierdate.getTime() - laterdate.getTime();
+    			}
+    			var originalDifference = difference;
+    			var yearsDifference = Math.floor(difference/1000/60/60/24/365);
+    			difference -= yearsDifference*1000*60*60*24*365;
+		    	var daysDifference = Math.floor(difference/1000/60/60/24);
+    			difference -= daysDifference*1000*60*60*24;
+    			var hoursDifference = Math.floor(difference/1000/60/60);
+    			difference -= hoursDifference*1000*60*60;
+			    var minutesDifference = Math.floor(difference/1000/60);
+    			difference -= minutesDifference*1000*60;
+    			var secondsDifference = Math.floor(difference/1000);
+
+    			return {
+    				raw: originalDifference,
+    				years: yearsDifference,
+    				days: daysDifference,
+    				hours: hoursDifference,
+    				minutes: minutesDifference,
+    				seconds: secondsDifference
+    			}
+    		}
+
+			app.events = [
+				new Event("First Met", "2005-08-25 08:40:00 MDT"),
+				new Event("First Date", "2005-09-30 19:20:00 MDT"),
+				new Event("First Kiss", "2005-10-04 12:35:00 MDT"),
+				new Event("First Fight", "2005-10-06 08:30:00 MDT"),
+				new Event("Began Dating for Real", "2006-01-04 11:40:00 MDT"),
+				new Event("Departed on First Trip Together (to steamboat)", "2006-08-11 10:05:00 MDT"),
+				new Event("Moved in Together", "2007-12-23 21:12:00 MDT"),
+				new Event("First Rental Together", "2009-04-31 16:54:00 MDT"),
+				new Event("First Condo Owned Together", "2010-05-31 14:30:00 MDT"),
+				new Event("First International Trip to Paris", "2011-06-01 08:45:00 MDT"),
+				new Event("Met Sam's Extended Family in Scotland", "2011-07-01 23:25:00 MDT"),
+				new Event("Met Zac's Extended Family in New York", "2012-08-10 17:30:00 MDT"),
+				new Event("Got Engaged", "2012-08-24 22:30:00 MDT"),
+				new Event("Will get married", "2013-05-27 14:00:00 MDT")
+			];
+
+			var maxDifference = timeDifference(new Date(), new Date("2005-08-20 00:00:00 MDT")).raw;
+
+			var eventTemplate = function(event) {
+				var contents = $("#event_template").html();
+				contents = contents.replace("{{title}}", event.title);
+
+				var difference = timeDifference(new Date(), event.timestamp);
+				var timestring = difference.years
+								 + " years "
+								 + difference.days
+								 + " days "
+								 + difference.hours
+								 + ":"
+								 + difference.minutes
+								 + ":"
+								 + difference.seconds;
+				contents = contents.replace("{{timestamp}}", timestring);
+
+				var $contents = $(contents);
+
+				var fillPercent = difference.raw / maxDifference;
+				$contents.find(".fill").css({"width": (fillPercent * 100) + "%" });
+
+				return $contents;
+			}
+
+			$(document).ready(function(){
+				setInterval(function(){
+					$("body").html("");
+					$.each(app.events, function(i, item){
+						$("body").append(eventTemplate(item));
+					});	
+				}, 1000);
+				
+			});
+		</script>
+	</head>
+	<body>
+
+	</body>
+</html>
