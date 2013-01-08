@@ -49,9 +49,9 @@
 					"rgb(224, 253, 89)",//"#e0fd59",
 					"#eefbb2"
 				],
-				Event: function(title, timestamp) {
+				Event: function(title, timestamp, milliseconds) {
 					this.title = title;
-					this.timestamp = new Date(timestamp);
+					this.timestamp = new Date(milliseconds);
 				},
 				timeDifference: function(laterdate, earlierdate) {
 					var difference = laterdate.getTime() - earlierdate.getTime();
@@ -123,20 +123,21 @@
 				setup: function() {
 					var Event = this.Event;
 					this.events = [
-						new Event("First Met", "2005-08-25 08:40:12 MDT"),
-						new Event("First Date", "2005-09-30 19:20:53 MDT"),
-						new Event("First Kiss", "2005-10-04 12:35:31 MDT"),
-						new Event("First Fight", "2005-10-06 08:30:45 MDT"),
-						new Event("Began Dating for Real", "2006-01-04 11:40:18 MDT"),
-						new Event("Departed on First Trip Together", "2006-08-11 10:05:29 MDT"),
-						new Event("Moved in Together", "2007-12-23 21:12:04 MDT"),
-						new Event("First Rental Together", "2009-04-31 16:54:51 MDT"),
-						new Event("First Condo Owned Together", "2010-05-31 14:30:34 MDT"),
-						new Event("First International Trip to Paris", "2011-06-01 08:45:02 MDT"),
-						new Event("Met Sam's Extended Family", "2011-07-01 23:25:40 MDT"),
-						new Event("Met Zac's Extended Family", "2012-08-10 17:30:25 MDT"),
-						new Event("Got Engaged", "2012-08-24 22:30:19 MDT"),
-						new Event("Will get married", "2013-05-27 14:00:55 MDT")
+						new Event("First Met", "2005-08-25 08:40:12 MDT", 1124980812000),
+						new Event("First Date", "2005-09-30 19:20:53 MDT", 1128129653000),
+						new Event("First Kiss", "2005-10-04 12:35:31 MDT", 1128450931000),
+						new Event("First Fight", "2005-10-06 08:30:45 MDT", 1128609045000),
+						new Event("Began Dating for Real", "2006-01-04 11:40:18 MDT", 1136396418000),
+						new Event("Departed on First Trip Together", "2006-08-11 10:05:29 MDT", 1155312329000),
+						new Event("Moved in Together", "2007-12-23 21:12:04 MDT", 1198465924000),
+						new Event("First Rental Together", "2009-04-31 16:54:51 MDT", 1241218491000),
+						new Event("First Condo Owned Together", "2010-05-31 14:30:34 MDT", 1275337834000),
+						new Event("First International Trip to Paris", "2011-06-01 08:45:02 MDT", 1306939502000),
+						new Event("Bridge lock stufffff &lt;3", "2011-06-04 14:16:27 GMT", 1307196987000),
+						new Event("Met Sam's Extended Family", "2011-07-01 23:25:40 MDT", 1309584340000),
+						new Event("Met Zac's Extended Family", "2012-08-10 17:30:25 MDT", 1344641425000),
+						new Event("Got Engaged", "2012-08-24 22:30:19 MDT", 1345869019000),
+						new Event("Will get married", "2013-05-27 14:00:55 MDT", 1369684855000)
 					];
 				}
 			};
@@ -144,8 +145,8 @@
 			app.setup();
 
 			$(document).ready(function(){
-				// app.render();
-				var interval = setInterval(function(){ app.render() }, 1000);
+				app.render();
+				// var interval = setInterval(function(){ app.render() }, 1000);
 			});
 		</script>
 	</head>
