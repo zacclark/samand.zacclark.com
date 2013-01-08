@@ -6,6 +6,20 @@
 			.event .timetrack { position: relative; height: 30px; width: 100%; overflow: hidden; }
 			.event .timetrack .label { z-index: 20; position: absolute; font-size: 32px; line-height: 30px; font-family: sans-serif; }
 			.event .timetrack .fill { position: absolute; top: 0; left: 0; bottom: 0; width: 500px; background: #4c4; }
+
+			.event .segments { width: 100%; float: left; margin-top: 20px; }
+			.event .segments .segment { display: block; float: left; height: 10px; width: 25px; margin-right: 5px; margin-bottom: 5px; background: #000; }
+			/*.event .segments .segment.year { width: 40px; background: #f00; }
+			.event .segments .segment.day { width: 20px; background: #0f0; }
+			.event .segments .segment.hour { width: 10px; background: #00f; }
+			.event .segments .segment.minute { width: 5px; background: #0ff; }
+			.event .segments .segment.second { width: 2px; background: #ff0; }*/
+
+			.event .segments .segment.year { width: 800px; background: #f00; }
+			.event .segments .segment.day { width: 100px; background: #0f0; }
+			.event .segments .segment.hour { width: 50px; background: #00f; }
+			.event .segments .segment.minute { width: 10px; background: #0ff; }
+			.event .segments .segment.second { width: 2px; background: #ff0; }
 		</style>
 		<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
 		<script type="html/template" id="event_template">
@@ -14,6 +28,13 @@
 				<div class="timetrack">
 					<div class="label">{{timestamp}}</div>
 					<div class="fill"></div>
+				</div>
+				<div class="segments">
+					<div class="years"></div>
+					<div class="days"></div>
+					<div class="hours"></div>
+					<div class="minutes"></div>
+					<div class="seconds"></div>
 				</div>
 			</div>
 		</script>
@@ -93,17 +114,38 @@
 				var fillPercent = difference.raw / maxDifference;
 				$contents.find(".fill").css({"width": (fillPercent * 100) + "%" });
 
+				for (var i = difference.years - 1; i >= 0; i--) {
+					$contents.find(".segments .years").append("<div class='segment year'></div>");
+				};
+
+				for (var i = difference.days - 1; i >= 0; i--) {
+					$contents.find(".segments .days").append("<div class='segment day'></div>");
+				};
+
+				for (var i = difference.hours - 1; i >= 0; i--) {
+					$contents.find(".segments .hours").append("<div class='segment hour'></div>");
+				};
+
+				for (var i = difference.minutes - 1; i >= 0; i--) {
+					$contents.find(".segments .minutes").append("<div class='segment minute'></div>");
+				};
+
+				for (var i = difference.seconds - 1; i >= 0; i--) {
+					$contents.find(".segments .seconds").append("<div class='segment second'></div>");
+				};
+
 				return $contents;
 			}
 
 			$(document).ready(function(){
-				setInterval(function(){
+				var render = function(){
 					$("body").html("");
 					$.each(app.events, function(i, item){
 						$("body").append(eventTemplate(item));
 					});	
-				}, 1000);
-				
+				}
+				render();
+				// var interval = setInterval(render, 1000);
 			});
 		</script>
 	</head>
