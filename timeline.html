@@ -3,14 +3,24 @@
 		<title>Sam + Zac :: Save the Date</title>
 		<style type="text/css">
 			* { margin: 0; padding: 0; }
-			body { font-family: sans-serif; }
+			html { min-height: 100%; }
+			body { font-family: sans-serif; background: #410d40; min-height: 100%; position: relative; }
+
 			.event { width: 100%; }
 			.event h2 { margin-left: 10px; font-size: 80px; padding: 10px 0; }
+			.event h2 a { text-decoration: underline; color: #555; }
 			.event .timetrack { position: relative; height: 50px; width: 100%; overflow: hidden; }
 			.event .timetrack .label, .event .timetrack .fill_label { position: absolute; font-size: 32px; line-height: 50px; bottom: 0; left: 10px; }
 			.event .timetrack .label { z-index: 0; color: #000; }
 			.event .timetrack .fill { z-index: 1; position: absolute; top: 0; left: 0; bottom: 0; width: 500px; background: #000; overflow: hidden; }
 			.event .timetrack .fill_label { z-index: 2; color: #fff; width: 1000px; }
+
+			.event.rsvp { padding: 20px 0; display: none; }
+			.event.rsvp a { width: 400px; padding: 20px; text-align: center; display: block; margin: auto; font-size: 60px; background: #99ef4c; border-radius: 20px; text-decoration: none; color: #111; font-weight: bold; }
+			.event.rsvp a:hover { background-color: #111; color: #fff; }
+
+			#loading { position: absolute; top: 50%; margin-top: -150px; text-align: center; width: 100%; height: 300px; background: url(./heart.png) no-repeat center center; }
+			#timeline { display: none; }
 		</style>
 		<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
 		<script type="html/template" id="event_template">
@@ -45,9 +55,13 @@
 					"#7ab705",
 					"#a3ef11",
 					// lime green
-					"#b3cd38",
-					"rgb(224, 253, 89)",//"#e0fd59",
-					"#eefbb2"
+					// "#b3cd38",
+					// "rgb(224, 253, 89)",//"#e0fd59",
+					// "#eefbb2",
+					// new green
+					"#99ef4c",
+					"#ccff66",
+					"#e6ffb3"
 				],
 				Event: function(title, timestamp, milliseconds) {
 					this.title = title;
@@ -82,7 +96,7 @@
 	    			}
 				},
 				getMaxDifference: function() {
-					return this.timeDifference(new Date(), new Date("2005-08-20 00:00:00 MDT")).raw;
+					return this.timeDifference(new Date(), new Date(1124517600000)).raw;
 				},
 				eventTemplate: function(event) {
 					var contents = $("#event_template").html();
@@ -107,50 +121,68 @@
 					var $contents = $(contents);
 
 					var fillPercent = difference.raw / this.getMaxDifference();
-					$contents.find(".fill").css({"width": (fillPercent * 100) + "%" });
+					var fillPercentString = (fillPercent * 100) + "%";
+					$contents.find(".fill").css({"width": fillPercentString });
 
 					return $contents;
 				},
 				render: function() {
-					$("body").html("");
+					$("#timeline").html("");
 					var that = this;
 					$.each(this.events, function(i, item){
 						var itemHTML = that.eventTemplate(item);
 						itemHTML.css({"background": that.colors[i]});
-						$("body").append(itemHTML);
-					});	
+
+						if (i == 0) {
+							itemHTML.css({"color":"#fff"});
+						}
+
+						$("#timeline").append(itemHTML);
+					});
+
+					if (!this.hasRendered) {
+						var time = 600;
+						$("#loading").fadeOut(time, function(){
+							$("#timeline").fadeIn(time);
+							$(".event.rsvp").fadeIn(time);
+							this.hasRendered = true;	
+						});
+					}
 				},
 				setup: function() {
 					var Event = this.Event;
 					this.events = [
-						new Event("First Met", "2005-08-25 08:40:12 MDT", 1124980812000),
+						new Event("Sam & Zac First Met", "2005-08-25 08:40:12 MDT", 1124980812000),
 						new Event("First Date", "2005-09-30 19:20:53 MDT", 1128129653000),
 						new Event("First Kiss", "2005-10-04 12:35:31 MDT", 1128450931000),
 						new Event("First Fight", "2005-10-06 08:30:45 MDT", 1128609045000),
-						new Event("Began Dating for Real", "2006-01-04 11:40:18 MDT", 1136396418000),
-						new Event("Departed on First Trip Together", "2006-08-11 10:05:29 MDT", 1155312329000),
+						new Event("Began Dating (for real)", "2006-01-04 11:40:18 MDT", 1136396418000),
+						new Event("First Trip Together (Steamboat)", "2006-08-11 10:05:29 MDT", 1155312329000),
 						new Event("Moved in Together", "2007-12-23 21:12:04 MDT", 1198465924000),
 						new Event("First Rental Together", "2009-04-31 16:54:51 MDT", 1241218491000),
 						new Event("First Condo Owned Together", "2010-05-31 14:30:34 MDT", 1275337834000),
-						new Event("First International Trip to Paris", "2011-06-01 08:45:02 MDT", 1306939502000),
-						new Event("Bridge lock stufffff &lt;3", "2011-06-04 14:16:27 GMT", 1307196987000),
+						new Event("First International Trip (Paris)", "2011-06-01 08:45:02 MDT", 1306939502000),
+						new Event("Love Lock (<a href='http://en.wikipedia.org/wiki/Love_padlocks'>details</a>)", "2011-06-04 14:16:27 GMT", 1307196987000),
 						new Event("Met Sam's Extended Family", "2011-07-01 23:25:40 MDT", 1309584340000),
 						new Event("Met Zac's Extended Family", "2012-08-10 17:30:25 MDT", 1344641425000),
 						new Event("Got Engaged", "2012-08-24 22:30:19 MDT", 1345869019000),
-						new Event("Will get married", "2013-05-27 14:00:55 MDT", 1369684855000)
+						new Event("Getting Married on 5/27/2013", "2013-05-27 14:00:55 MDT", 1369684855000)
 					];
+					this.hasRendered = false;
 				}
 			};
 
 			app.setup();
 
 			$(document).ready(function(){
-				app.render();
-				// var interval = setInterval(function(){ app.render() }, 1000);
+				// app.render();
+				var interval = setInterval(function(){ app.render() }, 1000);
 			});
 		</script>
 	</head>
 	<body>
-
+		<div id="timeline"></div>
+		<div class="event rsvp" style="background: #e6ffb3;"><a href="https://docs.google.com/spreadsheet/viewform?fromEmail=true&formkey=dHk1RzJuUldiSGx1RG5SR0lPSkxFMnc6MQ">Save the Date</a></div>
+		<div id="loading"></div>
 	</body>
 </html>
