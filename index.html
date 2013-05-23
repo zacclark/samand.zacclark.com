@@ -1,62 +1,189 @@
+<!DOCTYPE html>
 <html>
 	<head>
-		<title>Save the Date</title>
+		<title>Sam & Zac</title>
 		<style type="text/css">
 			* { margin: 0; padding: 0; }
-			body { background-color: #fff; font-family: "Arial", sans-serif; }
+			html { min-height: 100%; }
+			body { font-family: sans-serif; background: #410d40; min-height: 100%; position: relative; }
 
-			.container { width: 700px; margin: 0 auto; }
+			.event { width: 100%; }
+			.event h2 { margin-left: 10px; font-size: 80px; padding: 10px 0; }
+			.event h2 a { text-decoration: underline; color: #555; }
+			.event .timetrack { position: relative; height: 50px; width: 100%; overflow: hidden; }
+			.event .timetrack .label, .event .timetrack .fill_label { position: absolute; font-size: 32px; line-height: 50px; bottom: 0; left: 10px; }
+			.event .timetrack .label { z-index: 0; color: #000; }
+			.event .timetrack .fill { z-index: 1; position: absolute; top: 0; left: 0; bottom: 0; width: 500px; background: #000; overflow: hidden; }
+			.event .timetrack .fill_label { z-index: 2; color: #fff; width: 1000px; }
 
-			#header { background-color: #54ddFF; color: #fff; }
-			#header .container { padding: 30px 0 60px; text-shadow: 1px 1px 1px #666; position: relative; }
-			h1 { font-family: "Gill Sans", sans-serif; font-size: 18px; letter-spacing: 1px; text-transform: uppercase; }
-			h2 { font-family: "Arial"; font-weight: normal; font-size: 48px; margin-top: 30px; }
-			#rsvp { padding: 15px 30px; background-color: #630155; background-image: -webkit-linear-gradient(top, #ff264a, #ff264b); background-repeat: repeat-x; text-shadow: 0 -2px 0 rgba(0, 0, 0, 0.15); -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; position: absolute; right: 50px; top: 50px; color: #fff; text-decoration: none; border: 1px solid #E33600; font-size: 30px; }
+			.event.rsvp { padding: 20px 0; display: none; }
+			.event.rsvp a { width: 400px; padding: 20px; text-align: center; display: block; margin: auto; font-size: 60px; background: #99ef4c; border-radius: 20px; text-decoration: none; color: #111; font-weight: bold; }
+			.event.rsvp a:hover { background-color: #111; color: #fff; }
+			.event.rsvp a strong {}
+			.event.rsvp a span {font-size: 16px;}
 
-			#date { width: 100%; float: left; background: #D3E2EF url(./stripe.png); }
-			#date .container { margin-top: -30px; }
-			#date strong { font-family: "Arial", sans-serif; width: 220px; margin-right: 10px; display: block; height: 220px; background: #ccf0ad; display: inline-block; font-size: 120px; text-align: center; line-height: 220px; color: #fff; box-shadow: rgba(0,0,0, 0.5) 2px 2px 5px; text-shadow: 1px 1px 1px #666;}
-
-			#details { width: 100%; float: left; background: #fff; margin-top: -10px; height: 500px; border-top: 5px solid #ccc; padding-top: 10px; }
-			#details #image { width: 250px; background: #ccc; float: right; height: 300px; margin: 0 11px; padding: 1px; border: 1px solid #3b3; }
-			#details dl { font-size: 20px; margin-bottom: 10px; }
-			#details dt { font-weight: bold; float: left; width: 80px; text-align: right; margin-right: 20px; }
+			#loading { position: absolute; top: 50%; margin-top: -150px; text-align: center; width: 100%; height: 300px; background: url(./heart.png) no-repeat center center; }
+			#timeline { display: none; }
 		</style>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+		<script type="html/template" id="event_template">
+			<div class="event">
+				<h2>{{title}}</h2>
+				<div class="timetrack">
+					<div class="label">{{timestamp}}</div>
+					<div class="fill">
+						<div class="fill_label">{{timestamp}}</div>
+					</div>
+				</div>
+			</div>
+		</script>
+		<script type="text/javascript">
+			var app = {
+				events: [],
+				colors: [
+					// purple
+					"#410d40",
+					"#5c105b",
+					"#760f75",
+					// fuchsia
+					"#870071",
+					"#c12aa9",
+					"#ed6fda",
+					// blue
+					"#006b9d",
+					"#088ac6",
+					"#04a3ed",
+					// dark green
+					"#5f8f00",
+					"#7ab705",
+					"#a3ef11",
+					// lime green
+					// "#b3cd38",
+					// "rgb(224, 253, 89)",//"#e0fd59",
+					// "#eefbb2",
+					// new green
+					"#99ef4c",
+					"#ccff66",
+					"#e6ffb3"
+				],
+				Event: function(title, timestamp, milliseconds) {
+					this.title = title;
+					this.timestamp = new Date(milliseconds);
+				},
+				timeDifference: function(laterdate, earlierdate) {
+					var difference = laterdate.getTime() - earlierdate.getTime();
+					var past = true;
+	    			if (difference < 0) {
+	    				var past = false;
+	    				difference = earlierdate.getTime() - laterdate.getTime();
+	    			}
+	    			var originalDifference = difference;
+	    			var yearsDifference = Math.floor(difference/1000/60/60/24/365);
+	    			difference -= yearsDifference*1000*60*60*24*365;
+			    	var daysDifference = Math.floor(difference/1000/60/60/24);
+	    			difference -= daysDifference*1000*60*60*24;
+	    			var hoursDifference = Math.floor(difference/1000/60/60);
+	    			difference -= hoursDifference*1000*60*60;
+				    var minutesDifference = Math.floor(difference/1000/60);
+	    			difference -= minutesDifference*1000*60;
+	    			var secondsDifference = Math.floor(difference/1000);
+
+	    			return {
+	    				raw: originalDifference,
+	    				years: yearsDifference,
+	    				days: daysDifference,
+	    				hours: hoursDifference,
+	    				minutes: minutesDifference,
+	    				seconds: secondsDifference,
+	    				past: past
+	    			}
+				},
+				getMaxDifference: function() {
+					return this.timeDifference(new Date(), new Date(1124517600000)).raw;
+				},
+				eventTemplate: function(event) {
+					var contents = $("#event_template").html();
+					contents = contents.replace("{{title}}", event.title);
+
+					var difference = this.timeDifference(new Date(), event.timestamp);
+					var timestring = (difference.past ? "" : "in ")
+									 + difference.years
+									 + " years "
+									 + difference.days
+									 + " days "
+									 + difference.hours
+									 + " hours "
+									 + difference.minutes
+									 + " minutes "
+									 + difference.seconds
+									 + " seconds"
+									 + (difference.past ? " ago" : "");
+					contents = contents.replace("{{timestamp}}", timestring);
+					contents = contents.replace("{{timestamp}}", timestring);
+
+					var $contents = $(contents);
+
+					var fillPercent = difference.raw / this.getMaxDifference();
+					var fillPercentString = (fillPercent * 100) + "%";
+					$contents.find(".fill").css({"width": fillPercentString });
+
+					return $contents;
+				},
+				render: function() {
+					$("#timeline").html("");
+					var that = this;
+					$.each(this.events, function(i, item){
+						var itemHTML = that.eventTemplate(item);
+						itemHTML.css({"background": that.colors[i]});
+
+						if (i == 0) {
+							itemHTML.css({"color":"#fff"});
+						}
+
+						$("#timeline").append(itemHTML);
+					});
+
+					if (!this.hasRendered) {
+						var time = 600;
+						$("#loading").fadeOut(time, function(){
+							$("#timeline").fadeIn(time);
+							$(".event.rsvp").fadeIn(time);
+							this.hasRendered = true;	
+						});
+					}
+				},
+				setup: function() {
+					var Event = this.Event;
+					this.events = [
+						new Event("Sam & Zac First Met", "2005-08-25 08:40:12 MDT", 1124980812000),
+						new Event("First Date", "2005-09-30 19:20:53 MDT", 1128129653000),
+						new Event("First Kiss", "2005-10-04 12:35:31 MDT", 1128450931000),
+						new Event("First Fight", "2005-10-06 08:30:45 MDT", 1128609045000),
+						new Event("Began Dating (for real)", "2006-01-04 11:40:18 MDT", 1136396418000),
+						new Event("First Trip Together (Steamboat)", "2006-08-11 10:05:29 MDT", 1155312329000),
+						new Event("Moved in Together", "2007-12-23 21:12:04 MDT", 1198465924000),
+						new Event("First Rental Together", "2009-04-31 16:54:51 MDT", 1241218491000),
+						new Event("First Condo Owned Together", "2010-05-31 14:30:34 MDT", 1275337834000),
+						new Event("First International Trip (Paris)", "2011-06-01 08:45:02 MDT", 1306939502000),
+						new Event("Love Lock (<a href='http://en.wikipedia.org/wiki/Love_padlocks'>details</a>)", "2011-06-04 14:16:27 GMT", 1307196987000),
+						new Event("Met Sam's Extended Family", "2011-07-01 23:25:40 MDT", 1309584340000),
+						new Event("Met Zac's Extended Family", "2012-08-10 17:30:25 MDT", 1344641425000),
+						new Event("Got Engaged", "2012-08-24 22:30:19 MDT", 1345869019000),
+						new Event("Getting Married on 5/27/2013", "2013-05-27 14:00:55 MDT", 1369684855000)
+					];
+					this.hasRendered = false;
+				}
+			};
+
+			app.setup();
+
+			$(document).ready(function(){
+				var interval = setInterval(function(){ app.render() }, 1000);
+			});
+		</script>
 	</head>
 	<body>
-		<div id="header">
-			<div class="container">
-				<h1>Zac Clark &amp; Sam Lee</h1>
-				<h2>Save the Date</h2>
-				<a id="rsvp" href="#rsvp">RSVP</a>
-			</div>
-		</div>
-
-		<div id="date">
-			<div class="container">
-				<strong>05</strong>
-				<strong>27</strong>
-				<strong>13</strong>
-			</div>
-		</div>
-
-		<div id="details">
-			<div class="container">
-				<div id="image"></div>
-
-				<dl>
-					<dt>What:</dt>
-					<dd>Sam & Zac's Wedding</dd>
-
-					<dt>When:</dt>
-					<dd>May 27th, 2013</dd>
-
-					<dt>Where:</dt>
-					<dd>Somewhere near Boulder, CO</dd>
-				</dl>
-
-				<p>Friends, relatives, and loved ones: we invite you to attend our wedding, on the 27th of May, 2013. Come celebrate with us in the mountains with music, food, and lots of love. Please RSVP by phone, mail, or online. We'd love to hear from you regardless of your ability to attend.</p>
-			</div>
-		</div>
+		<div id="timeline"></div>
+		<div id="loading"></div>
 	</body>
 </html>
