@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Sam & Zac</title>
+<style type="text/css">
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background: #5c105b;
+        font-family: Arial;
+    }
+
+    .section {
+        position: relative;
+        border-top: 5px solid rgba(0, 0, 0, 0.9);
+        overflow: hidden;
+    }
+
+    .section h1 {
+        position: absolute;
+        bottom: 10px;
+        left: 30px;
+        color: #fff;
+        font-size: 200px;
+    }
+
+    .section h2 {
+        color: #fff;
+        margin-left: 30px;
+    }
+
+    .circle {
+        background: transparent;
+        position: absolute;
+        border: solid #fff;
+    }
+
+    .corner {
+        color: #fff;
+        position: absolute;
+        font-size: 1.5em;
+        transition: background 1s, color 1s;
+        cursor: pointer;
+        /*transition: left 2s, right 2s, top 2s, bottom 2s;*/
+    }
+
+    .corner h3 {
+        text-transform: uppercase;
+    }
+
+    .corner.north {
+        border-left: 5px solid #fff;
+        padding-left: 5px;
+        padding-right: 10px;
+    }
+
+    .corner.east {
+        border-top: 5px solid #fff;
+        padding-top: 5px;
+        padding-bottom: 10px;
+    }
+
+    .corner.south {
+        border-right: 5px solid #fff;
+        padding-right: 5px;
+        padding-left: 10px;
+        text-align: right;
+    }
+
+    .corner.west {
+        border-bottom: 5px solid #fff;
+        padding-bottom: 5px;
+        padding-top: 10px;
+        text-align: right;
+    }
+
+    .corner.in {
+        background: #fff;
+        color: #000;
+    }
+
+    .vow {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.8);
+        width: 100%;
+        height: 100%;
+    }
+
+    .vow .content {
+        /*width: 40em;*/
+        margin: auto;
+        color: #fff;
+        font-size: 30px;
+        padding: 1em;
+        line-height: 1.5em;
+    }
+
+    .vow.east {
+        top: 0;
+        right: 100%;
+        transition: right 1s ease;
+    }
+
+    .vow.south {
+        bottom: 100%;
+        transition: bottom 1s ease;
+    }
+
+    .vow.west {
+        top: 0;
+        left: 100%;
+        transition: left 1s ease;
+    }
+
+    .vow.north {
+        top: 100%;
+        transition: top 1s ease;
+    }
+
+    .sam {
+        background: #c12aa9;
+    }
+
+    .zac {
+        background: #7ab705;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script type="text/javascript">
+    var cornerDistance = 20;
+
+    function drawCorners(distance) {
+
+    }
+
+    function setup() {
+        var windowHeight = $(window).height();
+        var windowWidth = $(window).width();
+
+        var sectionBorder = 5;
+        var sectionHeight = windowHeight - sectionBorder;
+        var sectionWidth = windowWidth;
+        var circleSingleDimension = (Math.min(sectionHeight, sectionWidth) / 1.75) - 120;
+        var circleBorder = circleSingleDimension / 8;
+        var circleTotalSingleDimension = (circleSingleDimension + (circleBorder * 2));
+        var circleLeft = (sectionWidth - circleTotalSingleDimension) / 2;
+        var circleTop = (sectionHeight - circleTotalSingleDimension) / 2;
+
+        $(".section").height(sectionHeight);
+        $(".section h1").css({fontSize: windowHeight / 3});
+        $(".section h2").css({fontSize: windowHeight / 8});
+        $(".circle")
+                .height(circleSingleDimension)
+                .width(circleSingleDimension)
+                .css({
+                    borderRadius: circleTotalSingleDimension / 2,
+                    borderWidth: circleBorder,
+                    left: circleLeft,
+                    top: circleTop
+                });
+
+        $(".vow .content").css({fontSize: sectionHeight / 30});
+
+        // Corners
+        $(".corner").css({fontSize: sectionHeight / 50});
+        $(".corner.north").css({
+            left: sectionWidth / 2,
+            bottom: (sectionHeight - circleTop) + cornerDistance
+        });
+        $(".corner.east").css({
+            left: circleLeft + circleTotalSingleDimension + cornerDistance,
+            top: sectionHeight / 2
+        });
+        $(".corner.south").css({
+            top: circleTop + circleTotalSingleDimension + cornerDistance,
+            right: sectionWidth / 2
+        });
+        $(".corner.west").css({
+            bottom: sectionHeight / 2,
+            right: circleLeft + circleTotalSingleDimension + cornerDistance
+        });
+
+        // Vows
+        $(".vow.east").css({
+            right: sectionWidth,
+            width: circleLeft + circleTotalSingleDimension - 100
+        });
+        $(".corner.east").on("click", function () {
+            var $this = $(this);
+            var $eastVow = $this.closest(".section").find(".vow.east");
+            if ($this.hasClass("in")) {
+                $eastVow.css({ right: sectionWidth });
+                $this.removeClass("in");
+            } else {
+                $eastVow.css({ right: sectionWidth - (circleLeft + circleTotalSingleDimension - 100) });
+                $this.addClass("in");
+            }
+        });
+
+        $(".vow.south").css({
+            bottom: sectionHeight,
+            height: circleTop + circleTotalSingleDimension - 100
+        });
+        $(".corner.south").on("click", function () {
+            var $this = $(this);
+            var $southVow = $this.closest(".section").find(".vow.south");
+            if ($this.hasClass("in")) {
+                $southVow.css({ bottom: sectionHeight });
+                $this.removeClass("in");
+            } else {
+                $southVow.css({ bottom: sectionHeight - (circleTop + circleTotalSingleDimension - 100) });
+                $this.addClass("in");
+            }
+        });
+
+        $(".vow.west").css({
+            left: sectionWidth,
+            width: circleLeft + circleTotalSingleDimension - 100
+        });
+        $(".corner.west").on("click", function () {
+            var $this = $(this);
+            var $westVow = $this.closest(".section").find(".vow.west");
+            if ($this.hasClass("in")) {
+                $westVow.css({ left: sectionWidth });
+                $this.removeClass("in");
+            } else {
+                $westVow.css({ left: sectionWidth - (circleLeft + circleTotalSingleDimension - 100) });
+                $this.addClass("in");
+            }
+        });
+
+        $(".vow.north").css({
+            top: sectionHeight,
+            height: circleTop + circleTotalSingleDimension - 100
+        });
+        $(".corner.north").on("click", function () {
+            var $this = $(this);
+            var $northVow = $this.closest(".section").find(".vow.north");
+            if ($this.hasClass("in")) {
+                $northVow.css({ top: sectionHeight });
+                $this.removeClass("in");
+            } else {
+                $northVow.css({ top: sectionHeight - (circleTop + circleTotalSingleDimension - 100) });
+                $this.addClass("in");
+            }
+        });
+    }
+
+    function windowDidScroll() {
+
+    }
+
+    $(document).ready(function () {
+        setup();
+        $(window).resize(setup);
+        $(window).scroll(windowDidScroll);
+    });
+
+    function go() {
+        cornerDistance += 10;
+        setup();
+    }
+</script>
+</head>
+<body>
+
+<div class="intro section">
+    <h1>Vows</h1>
+</div>
+
+<div class="sam section">
+    <h2>Sam:</h2>
+
+    <div class="circle"></div>
+    <div class="north corner">
+        <h3>North</h3>
+
+        <p>Foundation as soul mates</p>
+
+        <p>Vows for joy</p>
+    </div>
+    <div class="east corner">
+        <h3>East</h3>
+
+        <p>Beginnings of love</p>
+
+        <p>Vows for the future</p>
+    </div>
+    <div class="south corner">
+        <h3>South</h3>
+
+        <p>Physical passions</p>
+
+        <p>Vows to health</p>
+    </div>
+    <div class="west corner">
+        <h3>West</h3>
+
+        <p>Emotional connections</p>
+
+        <p>Vows to communication</p>
+    </div>
+
+    <div class="east vow">
+        <div class="content">
+            <!-- Beginnings of love / vows for the future -->
+            <p>Zac, I don't remember when I fell in love with you, but it was somewhere between seeing Serenity and
+                lying on your bed staring at the plastic stars on the ceiling. Our love will be an adventure. I will
+                cry, I will dance, I will stress, I will love deeply, I will change. I commit to growing together,
+                changing together, and building the world we want to live in together.</p>
+        </div>
+    </div>
+    <div class="south vow">
+        <div class="content">
+            <!-- Physical passions / vows to health -->
+            <p>Zac, your love for me has been one of the greatest gifts in my life. It has given me strength, courage,
+                stability, excitement and boundless opportunities to learn. I commit to enjoying our quiet simple
+                moments together, and our loud fantastic moments of passion together. I commit to being the wild and
+                powerful woman I am and invite you to stand with me.</p>
+        </div>
+    </div>
+    <div class="west vow">
+        <div class="content">
+            <!-- Emotion connections / vows to communication-->
+            <p>Zac, I have always been drawn to your strength of personality, individuality, and vulnerability. I love
+                your willingness to experiment and your capacity for joy. I look forward to being silly and serious
+                together. I commit to being patient when we don't see eye to eye and finding resolution. I commit to
+                transparent communication. I will listen to your fears, hopes, dreams, and achievements and ask that you
+                will listen to mine.</p>
+        </div>
+    </div>
+    <div class="north vow">
+        <div class="content">
+            <!-- Foundation as soul mates / vows for love -->
+            <p>Zac, Our soul's journey is woven together. I appreciate your fierce loyalty, and I know you love me
+                unconditionally. I commit to always finding new ways to love you, appreciate you, and support you. I
+                commit to being your best friend and to stand beside you through whatever the universe brings our way. I
+                commit to falling more in love with you everyday.</p>
+        </div>
+    </div>
+</div>
+
+<div class="zac section">
+    <h2>Zac:</h2>
+
+    <div class="circle"></div>
+    <div class="east corner">
+        <h3>East</h3>
+
+        <p>Beginnings of love</p>
+
+        <p>Vows for the future</p>
+    </div>
+    <div class="south corner">
+        <h3>South</h3>
+
+        <p>Physical passions</p>
+
+        <p>Vows to health</p>
+    </div>
+    <div class="west corner">
+        <h3>West</h3>
+
+        <p>Emotional connections</p>
+
+        <p>Vows to communication</p>
+    </div>
+    <div class="north corner">
+        <h3>North</h3>
+
+        <p>Foundation as soul mates</p>
+
+        <p>Vows for joy</p>
+    </div>
+
+    <div class="east vow">
+        <div class="content">
+            <!-- Beginnings of love / vows for the future -->
+            <p>Right when we started dating (the first time), we bumped into each other at the bottom of the stairs
+                in New Vista and you gave me the gentlest, most comfortably loving hug I'd ever had. I can still
+                remember it vividly, and I admire and love your ability to love and to care so deeply. I vow to love you
+                more deeply with each kiss and to give you the support to grow in the ways you desire.</p>
+        </div>
+    </div>
+    <div class="south vow">
+        <div class="content">
+            <!-- Physical passions / vows to health -->
+            <p>Your willingness to jump in and try new things never ceases to amaze me. Whether its dancing, climbing,
+                yoga or any other exercise, you never hesitate to give it a shot. I vow to be open to new ways of
+                expressing myself and my love for you, whether it be song, dance, or anything else we may find
+                together and to find joy in your passion for change.</p>
+        </div>
+    </div>
+    <div class="west vow">
+        <div class="content">
+            <!-- Emotion connections / vows to communication-->
+            <p>I've never opened up to someone as wholly and comfortably as I have to you. I trust you completely, and I
+                know that I can tell you anything without fear of judgement or overreaction. When I'm at my lowest, I
+                can always trust you to be kind and understanding while getting me back on my feet. I vow to be that
+                same safe place for you, and to always keep an open and loving heart for anything you need to say.</p>
+        </div>
+    </div>
+    <div class="north vow">
+        <div class="content">
+            <!-- Foundation as soul mates / vows for love -->
+            <p>I cannot express how much I appreciate and value your drive to constantly improve our lives. We might not
+                always agree what paths to take, but we have always agreed on the direction. I vow to never stop
+                improving, to never settle for less, and to encourage your individual growth as well as our growth
+                together. My love for you will grow every day.</p>
+        </div>
+    </div>
+
+    <div class="hidden">
+        <h2>Things I love about Sam</h2>
+        <ul>
+            <li>Creative</li>
+            <li>Calm</li>
+            <li>Kind / caring</li>
+            <li>Loving</li>
+            <li>Beautiful</li>
+            <li>Exciting</li>
+            <li>Happy / joyful / always smiling</li>
+            <li>Passionate / dedicated</li>
+            <li>Forgiving</li>
+            <li>Open / accepting</li>
+            <li>Bringing me out of my shell / exciting</li>
+            <li>That one hug back in high school you don't remember</li>
+            <li>That you let me be little spoon</li>
+        </ul>
+
+        <h2>Commitments</h2>
+        <ul>
+            <li>To always be improving: self, how we communicate, how we spend time together, how I take care of you,
+                how I ask for things
+            </li>
+            <li>To reduce my materialism</li>
+            <li>To disconnect more / focus more</li>
+            <li>To focus on what you do right, rather than wrong</li>
+            <li>To stress out less</li>
+            <li>To let myself make mistakes</li>
+        </ul>
+
+        <h2>Notes</h2>
+        <ul>
+            <li>story -> appreciation -> vow</li>
+            <li>said loud enough for crowd, but directed at each other</li>
+            <li>keep PG</li>
+        </ul>
+
+        <p>select * from my_heart where value IS NOT sam; no rows returned/p>
+    </div>
+</div>
+
+</body>
+</html>
